@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// IGNORE: Used to Auto-Generate Challenges
 #[derive(CustomResource, Deserialize, Serialize, Clone, Debug, JsonSchema)]
+#[doc(hidden)]
 #[kube(
     group = "ctf.rs",
     version = "v1",
@@ -20,6 +21,7 @@ pub struct DeriveResource {
 
 /// IGNORE: Used to Auto-Generate ChallengeRequests
 #[derive(CustomResource, Deserialize, Serialize, Clone, Debug, JsonSchema)]
+#[doc(hidden)]
 #[kube(
     group = "ctf.rs",
     version = "v1",

@@ -1,7 +1,7 @@
 [package]
 name = "libctf"
 description = "SDK intended for use with CTF-rs, but is designed to be repurposed by others to easily extend functionality for other CTF related projects"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2024"
 license = "AGPL-3.0-or-later"
 readme = "README.md"

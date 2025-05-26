@@ -1,11 +1,11 @@
 [package]
 name = "libctf"
-description = ""
+description = "SDK intended for CTF-rs to use, but is designed to be repurposed by others to easily extend functionality for other CTF related projects"
 version = "0.1.0"
 edition = "2024"
 license-file = "LICENSE"
 readme = "README.md"
-homepage = "https://github.com/arustydev/openmetadata-rs-sdk"
+homepage = "https://github.com/arustydev/libctf"
 keywords = ["sdk", "ctf"]
 categories = ["api-bindings", "config", "web-programming"]
 

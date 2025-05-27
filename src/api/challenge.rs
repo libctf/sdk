@@ -10,7 +10,7 @@ use log;
 use serde::Serialize;
 use std::time::Duration;
 use tokio::time::sleep;
-// use tracing::{Level, span};
+use tracing::{Level, event, span};
 
 pub struct Resource {
     spec: Challenge,
@@ -36,12 +36,13 @@ impl Crud for Resource {
     ///
     /// Simply a wrapper around the `kube::Api::create()` method.
     fn create(
-        &self,
         ctx: &Context,
         client: kube::Client,
         pp: &PostParams,
         data: ChallengeSpec,
     ) -> impl Future<Output = Result<Challenge, Error>> + Send {
+        let span = span!(Level::TRACE, "create_challenge");
+        let _enter = span.enter();
         let pp = pp.clone();
         async move {
             let challenge: Api<Challenge> = Api::namespaced(client, "default");
@@ -54,12 +55,13 @@ impl Crud for Resource {
     ///
     /// Simply a wrapper around the `kube::Api::get()` method.
     fn read(
-        &self,
         ctx: &Context,
         client: kube::Client,
         name: String,
         gp: &GetParams,
     ) -> impl Future<Output = Result<Challenge, Error>> + Send {
+        let span = span!(Level::TRACE, "get_challenge");
+        let _enter = span.enter();
         let gp = gp.clone();
         async move {
             let challenge: Api<Challenge> = Api::namespaced(client, "default");
@@ -78,7 +80,6 @@ impl Crud for Resource {
     ///
     /// Simply a wrapper around the `kube::Api::patch()` method.
     fn update<P: Serialize + std::fmt::Debug>(
-        &self,
         ctx: &Context,
         client: kube::Client,
         name: String,
@@ -88,6 +89,8 @@ impl Crud for Resource {
     where
         P: Send + Sync + Clone + 'static,
     {
+        let span = span!(Level::TRACE, "update_challenge");
+        let _enter = span.enter();
         let params = params.clone();
         let patch = patch.clone();
         async move {
@@ -101,12 +104,13 @@ impl Crud for Resource {
     /// A looped wrapper around the `kube::Api::delete()` method.
     /// Loops until the resource is deleted or an error occurs.
     fn delete(
-        &self,
         ctx: &Context,
         client: kube::Client,
         name: String,
         dp: &DeleteParams,
     ) -> impl Future<Output = Result<Challenge, Error>> + Send {
+        let span = span!(Level::TRACE, "delete_challenge");
+        let _enter = span.enter();
         let dp = dp.clone(); // Clone DeleteParams since we need to move it
 
         async move {
@@ -119,6 +123,7 @@ impl Crud for Resource {
                         return Ok(challenge_obj);
                     }
                     Either::Right(status) => {
+                        event!(Level::INFO, "Deleted CRD status");
                         log::info!(
                             "Deleted CRD status: {:?}, retry {}/{}...",
                             status,
@@ -128,6 +133,7 @@ impl Crud for Resource {
 
                         retries += 1;
                         if retries >= MAX_RETRIES {
+                            event!(Level::ERROR, "Error 429: TooManyRetries");
                             return Err(kube::Error::Api(kube::error::ErrorResponse {
                                 status: "TooManyRetries".to_string(),
                                 message: format!("Max retries ({}) exceeded", MAX_RETRIES),
